@@ -1,0 +1,51 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 1424" width="900" height="1424" role="img" aria-label="Exhibit A — photograph pending">
+  <defs>
+    <linearGradient id="pg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#efe7d6"/>
+      <stop offset="1" stop-color="#ddd2ba"/>
+    </linearGradient>
+    <pattern id="hatch" width="14" height="14" patternUnits="userSpaceOnUse" patternTransform="rotate(38)">
+      <line x1="0" y1="0" x2="0" y2="14" stroke="#8a7c62" stroke-width="1.15" opacity="0.42"/>
+    </pattern>
+    <pattern id="hatch2" width="9" height="9" patternUnits="userSpaceOnUse" patternTransform="rotate(-24)">
+      <line x1="0" y1="0" x2="0" y2="9" stroke="#6f6350" stroke-width="0.9" opacity="0.3"/>
+    </pattern>
+    <radialGradient id="vig" cx="50%" cy="38%" r="72%">
+      <stop offset="0.45" stop-color="#000" stop-opacity="0"/>
+      <stop offset="1" stop-color="#000" stop-opacity="0.34"/>
+    </radialGradient>
+  </defs>
+
+  <rect width="900" height="1424" fill="url(#pg)"/>
+  <rect width="900" height="1424" fill="url(#hatch)"/>
+
+  <!-- silhouette: figure holding a stone -->
+  <g fill="#3a3225" opacity="0.9">
+    <circle cx="450" cy="430" r="132"/>
+    <path d="M450 566 c-138 0 -236 96 -258 234 l-24 150 h564 l-24 -150 c-22 -138 -120 -234 -258 -234 z"/>
+  </g>
+  <g fill="url(#hatch2)">
+    <circle cx="450" cy="430" r="132"/>
+    <path d="M450 566 c-138 0 -236 96 -258 234 l-24 150 h564 l-24 -150 c-22 -138 -120 -234 -258 -234 z"/>
+  </g>
+
+  <!-- the stone of destiny, cradled -->
+  <g transform="translate(450 1010)">
+    <path d="M-96 46 c-14 -52 12 -104 62 -122 c46 -16 104 -6 128 34 c22 36 14 82 -18 106 c-42 32 -156 26 -172 -18 z"
+          fill="#4a4336" stroke="#241f16" stroke-width="4"/>
+    <path d="M-58 12 l38 -26 l34 30 l40 -18" fill="none" stroke="#cbbfa4" stroke-width="3.4" opacity="0.7"/>
+    <path d="M-30 60 l30 -22 l36 26" fill="none" stroke="#cbbfa4" stroke-width="3" opacity="0.55"/>
+  </g>
+
+  <rect width="900" height="1424" fill="url(#vig)"/>
+
+  <!-- registration marks + label -->
+  <g stroke="#241f16" stroke-width="4" fill="none" opacity="0.75">
+    <path d="M40 40 h74 M40 40 v74 M860 40 h-74 M860 40 v74 M40 1384 h74 M40 1384 v-74 M860 1384 h-74 M860 1384 v-74"/>
+  </g>
+  <g font-family="Courier New, monospace" text-anchor="middle" fill="#241f16">
+    <text x="450" y="1268" font-size="52" letter-spacing="10">EXHIBIT A</text>
+    <text x="450" y="1324" font-size="30" letter-spacing="5" opacity="0.72">PHOTOGRAPH PENDING</text>
+    <text x="450" y="1364" font-size="23" letter-spacing="3" opacity="0.55">DROP lia.png IN THIS FOLDER</text>
+  </g>
+</svg>

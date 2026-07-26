@@ -1,0 +1,55 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 1424" width="900" height="1424" role="img" aria-label="Exhibit B — photograph pending">
+  <defs>
+    <linearGradient id="pg2" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#e9e0cd"/>
+      <stop offset="1" stop-color="#d5c9b0"/>
+    </linearGradient>
+    <pattern id="grid2" width="46" height="46" patternUnits="userSpaceOnUse">
+      <path d="M46 0 V46 H0" fill="none" stroke="#8a7c62" stroke-width="1" opacity="0.32"/>
+    </pattern>
+    <pattern id="hatch3" width="11" height="11" patternUnits="userSpaceOnUse" patternTransform="rotate(52)">
+      <line x1="0" y1="0" x2="0" y2="11" stroke="#6f6350" stroke-width="1" opacity="0.34"/>
+    </pattern>
+    <radialGradient id="vig2" cx="50%" cy="40%" r="70%">
+      <stop offset="0.42" stop-color="#000" stop-opacity="0"/>
+      <stop offset="1" stop-color="#000" stop-opacity="0.38"/>
+    </radialGradient>
+  </defs>
+
+  <rect width="900" height="1424" fill="url(#pg2)"/>
+  <rect width="900" height="1424" fill="url(#grid2)"/>
+
+  <!-- height chart, mugshot style -->
+  <g font-family="Courier New, monospace" fill="#241f16" opacity="0.6" font-size="24">
+    <text x="58" y="330">6'0"</text><text x="58" y="560">5'6"</text>
+    <text x="58" y="790">5'0"</text><text x="58" y="1020">4'6"</text>
+  </g>
+  <g stroke="#241f16" stroke-width="2" opacity="0.4">
+    <path d="M150 316 h700 M150 546 h700 M150 776 h700 M150 1006 h700"/>
+  </g>
+
+  <!-- silhouette, arms folded (unimpressed posture) -->
+  <g fill="#39311f" opacity="0.92">
+    <circle cx="450" cy="470" r="120"/>
+    <path d="M450 596 c-128 0 -220 88 -240 216 l-20 130 h520 l-20 -130 c-20 -128 -112 -216 -240 -216 z"/>
+    <rect x="256" y="836" width="388" height="56" rx="28"/>
+  </g>
+  <g fill="url(#hatch3)">
+    <circle cx="450" cy="470" r="120"/>
+    <path d="M450 596 c-128 0 -220 88 -240 216 l-20 130 h520 l-20 -130 c-20 -128 -112 -216 -240 -216 z"/>
+  </g>
+
+  <!-- the tiny heart she insists is not there -->
+  <path d="M450 745 c-26 -30 -66 -16 -66 18 c0 32 42 56 66 78 c24 -22 66 -46 66 -78 c0 -34 -40 -48 -66 -18 z"
+        fill="#b9301a" opacity="0.88"/>
+
+  <rect width="900" height="1424" fill="url(#vig2)"/>
+
+  <g font-family="Courier New, monospace" text-anchor="middle" fill="#241f16">
+    <rect x="196" y="1120" width="508" height="86" fill="none" stroke="#241f16" stroke-width="4"/>
+    <text x="450" y="1178" font-size="44" letter-spacing="8">EXHIBIT B</text>
+    <text x="450" y="1268" font-size="28" letter-spacing="4" opacity="0.7">SECOND PLATE PENDING</text>
+    <text x="450" y="1318" font-size="23" letter-spacing="3" opacity="0.54">DROP lia2.png IN THIS FOLDER</text>
+    <text x="450" y="1372" font-size="21" letter-spacing="2" opacity="0.42">ASPECT LOCKED 900 &#215; 1424</text>
+  </g>
+</svg>
