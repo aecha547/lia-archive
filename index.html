@@ -354,7 +354,10 @@ html.flat .spider-tap { right: clamp(62px, 10vw, 130px); }
   height: calc(var(--ph) * 1px);
   transform-style: preserve-3d;
   transform-origin: center center;
-  transform: translateX(-25%) scale(var(--fit));
+  /* scale BEFORE the shift: a percentage translate resolves against the
+     untransformed box, so translating first over-shoots by (1 - scale)
+     and walks the page off the left edge on small screens. */
+  transform: scale(var(--fit)) translateX(-25%);
   transition: transform .95s cubic-bezier(.18,.72,.18,1);
   filter: drop-shadow(0 26px 54px rgba(0,0,0,.85));
   will-change: transform;
@@ -403,6 +406,9 @@ html.phone .sheet { padding: 12px 11px 11px; }
   position: relative; z-index: 2;
   display: flex; flex-direction: column;
   width: 100%; height: 100%;
+  /* 4px of slack absorbs rotated stamps, signatures and blackletter
+     descenders, whose bounding boxes spill past their line box */
+  padding-bottom: 4px;
   overflow: hidden;
   transform-origin: top left;
 }
@@ -735,6 +741,15 @@ html.phone .agate { columns: 2; }
   align-self: center; font-family: 'Special Elite', monospace; font-size: var(--fs-micro);
   letter-spacing: 3.4px; text-transform: uppercase; color: var(--red);
   border: 2px solid var(--red); padding: 4px 12px; transform: rotate(-4deg);
+}
+
+/* ---------- very narrow phones: the nav pill must not out-grow the screen ---------- */
+@media (max-width: 360px) {
+  .chrome { gap: 9px; padding: 7px 11px; }
+  .dots { display: none; }
+  .nav-btn { width: 42px; height: 42px; min-width: 42px; font-size: 1.1rem; }
+  .folio { font-size: .54rem; min-width: 6.2em; }
+  .swipe-hint { font-size: .52rem; padding: 4px 10px; }
 }
 
 /* ---------- landscape phones: dock the nav to the side ---------- */
@@ -1408,12 +1423,14 @@ html.phone .agate { columns: 2; }
     return { w: window.innerWidth, h: window.innerHeight };
   }
   const clamp = (v, lo, hi) => Math.min(hi, Math.max(lo, v));
+  /* space the nav pill needs. In flat mode it is docked to the right edge,
+     so it costs width instead of height. */
   function chromeReserve() {
-    /* when the pill is docked to the side it costs no vertical space */
-    if (flat) return 22;
+    if (flat) return 20;
     const r = chrome.getBoundingClientRect();
-    return (r.height || 62) + 26;
+    return (r.height || 62) + 18;
   }
+  function sideReserve() { return flat ? 78 : 0; }
   let flat = false;
   function detectMode() {
     const { w, h } = vp();
@@ -1440,20 +1457,32 @@ html.phone .agate { columns: 2; }
     }
     return { s: current, side: current === 0 ? 1 : (current === N ? -1 : 0), one: current === 0 || current === N };
   }
+  let lastPh = 0;
   function applyFit() {
     const { w, h } = vp();
-    const usable = Math.max(180, h - chromeReserve());
-    /* side-docked nav in flat mode eats width instead of height */
-    const availW = flat ? Math.max(220, w - 104) : w;
+    const vReserve = chromeReserve();
+    const hReserve = sideReserve();
+    /* the extra 6px absorbs sub-pixel rounding so the sheet never kisses an edge */
+    const usable = Math.max(180, h - vReserve - 6);
+    const availW = Math.max(220, w - hReserve);
     const pw = parseFloat(getComputedStyle(root).getPropertyValue('--pw')) || 470;
     const v = viewState();
+
+    /* the paper should read as a sheet on a desk, so it keeps a real margin
+       instead of going edge to edge */
+    const wFactor = phone ? 0.93 : flat ? 0.95 : 0.965;
+
+    /* centre inside the space the nav is NOT using, otherwise the sheet is
+       centred on the whole screen and its bottom slides under the pill */
+    stage.style.paddingBottom = vReserve + 'px';
+    stage.style.paddingRight = hReserve + 'px';
 
     /* On handhelds the page HEIGHT is derived from the viewport so the sheet
        fills the screen in both axes at once. That is why type here stays
        readable where a fixed 3:4 page would have had to shrink to ~70%. */
     let ph;
     if (phone || flat) {
-      const widthScale = single ? (availW * 0.975) / pw : (availW * 0.965) / (pw * 2);
+      const widthScale = single ? (availW * wFactor) / pw : (availW * wFactor) / (pw * 2);
       ph = clamp(usable / widthScale, phone ? 596 : 430, phone ? 790 : 580);
       root.style.setProperty('--ph', ph.toFixed(1));
     } else {
@@ -1463,29 +1492,52 @@ html.phone .agate { columns: 2; }
 
     let scale, x;
     if (v.one) {
-      scale = Math.min((availW * 0.975) / pw, usable / ph, 1.35);
+      scale = Math.min((availW * wFactor) / pw, usable / ph, 1.35);
       x = v.side * -25;
     } else {
-      scale = Math.min((availW * 0.965) / (pw * 2), usable / ph, 1.15);
+      scale = Math.min((availW * wFactor) / (pw * 2), usable / ph, 1.15);
       x = 0;
     }
     scale = Math.max(0.24, scale);
+
+    /* a changed page height reflows the copy, so re-run the shrink-to-fit */
+    if (Math.abs(ph - lastPh) > 0.5) { lastPh = ph; if (started) fitAllCopy(); }
     root.style.setProperty('--fit', scale.toFixed(4));
-    book.style.transform = 'translateX(' + x + '%) scale(' + scale.toFixed(4) + ')';
+    book.style.transform = 'scale(' + scale.toFixed(4) + ') translateX(' + x + '%)';
   }
 
   /* shrink-to-fit: if a page's copy overruns its plate, scale that
      whole composition down a notch. No page can ever clip. */
+  const FIT_FLOOR = 0.55;
   function fitCopy(el) {
     el.style.width = ''; el.style.height = ''; el.style.transform = '';
-    let s = 1;
-    for (let pass = 0; pass < 6; pass += 1) {
-      const need = el.scrollHeight, have = el.clientHeight;
-      if (need <= have + 1 || have === 0) break;
-      s = Math.max(0.58, s * Math.max(0.88, have / need));
+    const spills = () => el.scrollHeight > el.clientHeight + 1;
+    /* pages that already fit are left completely alone */
+    if (!spills() || el.clientHeight <= 0) return;
+    const apply = (s) => {
       el.style.width = (100 / s).toFixed(3) + '%';
       el.style.height = (100 / s).toFixed(3) + '%';
       el.style.transform = 'scale(' + s.toFixed(4) + ')';
+    };
+    let s = 1;
+    /* converge on roughly the right factor */
+    for (let pass = 0; pass < 10 && s > FIT_FLOOR; pass += 1) {
+      const need = el.scrollHeight, have = el.clientHeight;
+      if (need <= have + 1 || have <= 0) break;
+      s = Math.max(FIT_FLOOR, s * Math.max(0.9, (have - 3) / need));
+      apply(s);
+    }
+    /* then guarantee it — sub-pixel rounding can leave a few stubborn px.
+       Bail the moment shrinking stops helping: an overflow that scales with
+       the page (a rotated stamp, say) can never be scaled away, and grinding
+       s down would wreck a page that is otherwise perfectly composed. */
+    let residual = el.scrollHeight - el.clientHeight;
+    for (let guard = 0; guard < 20 && s > FIT_FLOOR && spills(); guard += 1) {
+      s = Math.max(FIT_FLOOR, s - 0.006);
+      apply(s);
+      const now = el.scrollHeight - el.clientHeight;
+      if (now >= residual - 0.5) break;
+      residual = now;
     }
   }
   let copyJob = 0;
